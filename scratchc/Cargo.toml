@@ -1,0 +1,10 @@
+[package]
+name = "scratchc"
+edition = "2021"
+description = "Compiler for scratchlet language."
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+
+[dependencies]

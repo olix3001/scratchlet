@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = [ "catnip","pawgen", "scratchc"]
+
+[workspace.package]
+version = "0.1.0"
+authors = ["Oliwier Michalik"]
+repository = "https://github.com/olix3001/scratchlet"
+license = "MIT"
+
+# [workspace.dependencies]

@@ -1,0 +1,10 @@
+[package]
+name = "pawgen"
+edition = "2021"
+description = "Code generation for scratch projects."
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+
+[dependencies]
