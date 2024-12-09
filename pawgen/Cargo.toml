@@ -8,3 +8,8 @@ repository.workspace = true
 license.workspace = true
 
 [dependencies]
+hex = "0.4.3"
+md5 = "0.7.0"
+serde.workspace = true
+serde_json.workspace = true
+zip = "2.2.1"
