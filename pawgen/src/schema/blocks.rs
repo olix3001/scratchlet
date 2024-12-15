@@ -94,7 +94,7 @@ impl<'de> serde::Deserialize<'de> for BlockField {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Pointer(String),
     Text(String),

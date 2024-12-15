@@ -1,46 +1,86 @@
-use pawgen::{codegen::ProjectBuilder, schema::Value};
+use scratchc::mir::{
+    self, BlockDefinition, BlockInput, Costume, DataType, MirRefinementConfig, MirRefinery,
+    Procedure, Sprite, Statement,
+};
 
 fn main() {
-    // Currently this is only temporary for testing purposes.
-    let mut project = ProjectBuilder::new();
-    project.init_core();
+    let mut project = mir::Project::new();
+    project.get_definitions().define(
+        "move",
+        BlockDefinition::new(
+            "motion_movesteps",
+            false,
+            [BlockInput::new("STEPS".to_owned(), DataType::Number)],
+            [],
+        ),
+    );
 
-    {
-        let background = project
-            .register_asset("background1", "../prototyping/background.svg")
-            .unwrap();
-        let stage = project.get_stage();
-        stage.add_costume(&background);
-        stage.set_default_costume("background1");
-    }
+    let mut stage = Sprite::new("Stage");
+    stage
+        .mark_as_stage()
+        .add_costume(Costume::new("background1", "../prototyping/background.svg"));
+    project.add_sprite(stage);
 
-    {
-        let cat_sprite = project
-            .register_asset("cat1", "../prototyping/cat.svg")
-            .unwrap();
-        let cat = project.create_sprite("cat");
-        cat.add_costume(&cat_sprite);
-        cat.set_default_costume("cat1");
+    let mut cat = Sprite::new("Cat");
 
-        let mut code = cat.blocks_builder();
-        code.block("event_whenflagclicked", false);
-        code.block("motion_movesteps", false)
-            .set_input("STEPS", &[Value::Number(10.0)]);
+    let mut move_right_proc = Procedure::new(
+        "move_right",
+        false,
+        [mir::DataType::Structure(vec![
+            DataType::Number,
+            DataType::Boolean,
+        ])],
+    );
+    move_right_proc
+        .code_block()
+        .push_stmt(Statement::Assignment(
+            Box::new(Statement::VariableRef(
+                "hello".to_owned(),
+                "world".to_owned(),
+                DataType::Structure(vec![DataType::Number, DataType::Boolean]),
+            )),
+            Box::new(Statement::ArgumentRef(
+                0,
+                DataType::Structure(vec![DataType::Number, DataType::Boolean]),
+            )),
+        ))
+        .push_stmt(Statement::BlockCall(
+            "move".to_owned(),
+            vec![Statement::Constant(
+                scratchc::pawgen::schema::Value::Number(10.0),
+            )],
+        ))
+        .push_stmt(Statement::Assignment(
+            Box::new(Statement::FieldRef(
+                Box::new(Statement::VariableRef(
+                    "lorem".to_owned(),
+                    "ipsum".to_owned(),
+                    DataType::Structure(vec![
+                        DataType::Number,
+                        DataType::Structure(vec![DataType::Boolean, DataType::Boolean]),
+                    ]),
+                )),
+                1,
+                DataType::Structure(vec![
+                    DataType::Number,
+                    DataType::Structure(vec![DataType::Boolean, DataType::Boolean]),
+                ]),
+            )),
+            Box::new(Statement::StructureLiteral(
+                vec![
+                    scratchc::pawgen::schema::Value::Text("false".to_owned()),
+                    scratchc::pawgen::schema::Value::Text("true".to_owned()),
+                ],
+                DataType::Structure(vec![DataType::Boolean, DataType::Boolean]),
+            )),
+        ));
 
-        code.control_if(
-            |code| {
-                code.block("operator_equals", true)
-                    .set_input("OPERAND1", &[Value::Text("A".to_string())])
-                    .set_input("OPERAND2", &[Value::Text("A".to_string())])
-                    .id()
-            },
-            |code| {
-                code.block("looks_say", false)
-                    .set_input("MESSAGE", &[Value::Text("A is equal to A!".to_string())]);
-            },
-        );
-    }
+    cat.add_costume(Costume::new("cat1", "../prototyping/cat.svg"))
+        .add_procedure(move_right_proc);
+    project.add_sprite(cat);
 
+    let mut refinery = MirRefinery::new(MirRefinementConfig::default());
+    let project = refinery.refine_project(project);
     project
         .bundle_project("../prototyping/test_project.sb3")
         .unwrap();

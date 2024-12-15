@@ -255,7 +255,7 @@ impl<'a, 'b: 'a> BlockBuilder<'a, 'b> {
         }
     }
 
-    fn block_ref(&mut self) -> &mut schema::Block {
+    pub fn block_ref(&mut self) -> &mut schema::Block {
         self.builder.blocks.blocks.get_mut(&self.id).unwrap()
     }
 
