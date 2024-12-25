@@ -9,4 +9,6 @@ license.workspace = true
 
 [dependencies]
 derive_more = { version = "1.0.0", features = ["constructor", "is_variant", "unwrap"] }
+logos = "0.15.0"
 pawgen.workspace = true
+slotmap = "1.0.7"
